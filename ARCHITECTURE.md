@@ -1,17 +1,17 @@
 # BookStore - Arquitetura e Fluxo do CRUD
 
 ## Objetivo
-Este documento explica a arquitetura criada para a solu��o `BookStore`, o papel de cada camada, como elas se relacionam e como o CRUD de livros funciona na pr�tica.
+Este documento explica a arquitetura criada para a solução `BookStore`, o papel de cada camada, como elas se relacionam e como o CRUD de livros funciona na prática.
 
-A solu��o foi organizada para manter:
+A solução foi organizada para manter:
 - baixo acoplamento
 - responsabilidades bem definidas
-- facilidade de manuten��o
-- regras de neg�cio isoladas
-- infraestrutura troc�vel sem impactar a regra da aplica��o
+- facilidade de manutenção
+- regras de negócio isoladas
+- infraestrutura trocável sem impactar a regra da aplicação
 
-## Vis�o geral da solu��o
-A solu��o est� dividida em 4 projetos:
+## Visão geral da solução
+A solução está dividida em 4 projetos:
 
 ```text
 BookStore.sln
@@ -22,26 +22,26 @@ BookStore.sln
 ```
 
 ### Papel de cada projeto
-- `BookStore.Api`: camada de entrada HTTP. Recebe requisi��es, envia respostas e configura o pipeline da aplica��o.
-- `BookStore.Application`: camada de casos de uso. Orquestra o fluxo da aplica��o, define contratos, DTOs e servi�os.
-- `BookStore.Domain`: camada central do neg�cio. Cont�m entidades e regras de dom�nio.
-- `BookStore.Infrastructure`: camada de persist�ncia e integra��es t�cnicas. Implementa EF Core, reposit�rios, migrations e inje��o de depend�ncia.
+- `BookStore.Api`: camada de entrada HTTP. Recebe requisições, envia respostas e configura o pipeline da aplicação.
+- `BookStore.Application`: camada de casos de uso. Orquestra o fluxo da aplicação, define contratos, DTOs e serviços.
+- `BookStore.Domain`: camada central do negócio. Contém entidades e regras de domínio.
+- `BookStore.Infrastructure`: camada de persistência e integrações técnicas. Implementa EF Core, repositórios, migrations e injeção de dependência.
 
-## Depend�ncia entre camadas
-A dire��o da depend�ncia segue esta ideia:
+## Dependência entre camadas
+A direção da dependência segue esta ideia:
 
 ```text
 Api -> Application -> Domain
 Api -> Infrastructure -> Application -> Domain
 ```
 
-O ponto importante �:
-- `Domain` n�o depende de ningu�m.
+O ponto importante é:
+- `Domain` néo depende de ninguém.
 - `Application` depende do `Domain`.
 - `Infrastructure` depende de `Application` e `Domain`.
 - `Api` depende de `Application` e `Infrastructure`.
 
-Isso evita que regra de neg�cio fique presa a banco de dados, controller ou framework web.
+Isso evita que regra de negócio fique presa a banco de dados, controller ou framework web.
 
 ## Estrutura detalhada
 
@@ -123,7 +123,7 @@ public sealed class CreateBookDto
 
 Essas validações protegem a entrada HTTP. Já a entidade Book protege o domínio.
 
-### Servi�o de aplicação
+### Serviéo de aplicação
 O serviço de aplicação é o ponto central do CRUD.
 
 Exemplo:
@@ -160,7 +160,7 @@ Responsabilidade:
 - registrar dependências no container
 
 ### DbContext
-O `AppDbContext` representa a sess�o com o banco.
+O `AppDbContext` representa a sesséo com o banco.
 
 Exemplo:
 ```csharp
@@ -212,7 +212,7 @@ Funções do repositório:
 - esconder detalhes do EF Core do restante da aplicação
 
 ### Dependency Injection
-A infraestrutura exp�e uma extensão para registrar tudo de uma vez.
+A infraestrutura expée uma extensão para registrar tudo de uma vez.
 
 Exemplo:
 ```csharp
@@ -236,7 +236,7 @@ devolver respostas HTTP
 configurar middleware, validação automática e tratamento global de erros
 
 ### Program.cs
-O `Program.cs` faz a composi��o da aplica��o.
+O `Program.cs` faz a composiééo da aplicação.
 
 Funções principais:
 
@@ -248,12 +248,12 @@ aplica migrations automaticamente
 faz seed inicial de dados
 
 ## Tratamento de erros
-Foram criados dois n�veis de tratamento:
+Foram criados dois néveis de tratamento:
 
-### 1. Erro de valida��o de entrada
-Se o JSON enviado para a API estiver inv�lido, o ASP.NET devolve `400 Bad Request` com `ValidationProblemDetails`.
+### 1. Erro de validaééo de entrada
+Se o JSON enviado para a API estiver invélido, o ASP.NET devolve `400 Bad Request` com `ValidationProblemDetails`.
 
-Exemplo de entrada inv�lida:
+Exemplo de entrada invélida:
 ```json
 {
   "title": "",
@@ -275,18 +275,18 @@ Exemplo de resposta:
 }
 ```
 
-### 2. Erro de dom�nio e erro de aplica��o
-Se o problema for de regra de neg�cio ou recurso inexistente, o middleware global converte a exce��o para HTTP.
+### 2. Erro de domínio e erro de aplicação
+Se o problema for de regra de negócio ou recurso inexistente, o middleware global converte a exceééo para HTTP.
 
 Mapeamento:
 - `DomainValidationException` -> `400`
 - `NotFoundException` -> `404`
-- qualquer outra exce��o -> `500`
+- qualquer outra exceééo -> `500`
 
 ## Fluxo completo do CRUD
 
 ## CREATE - Criar livro
-### Requisi��o
+### Requisiééo
 `POST /api/books`
 
 Payload:
@@ -303,13 +303,13 @@ Payload:
 2. O ASP.NET valida `CreateBookDto`.
 3. O controller chama `IBookService.CreateAsync`.
 4. O `BookService` cria a entidade `Book`.
-5. A entidade valida seus pr�prios dados.
-6. O servi�o chama `IBookRepository.AddAsync`.
+5. A entidade valida seus préprios dados.
+6. O serviéo chama `IBookRepository.AddAsync`.
 7. O `BookRepository` usa EF Core para persistir.
-8. O servi�o converte a entidade para `BookDto`.
+8. O serviéo converte a entidade para `BookDto`.
 9. O controller retorna `201 Created`.
 
-### C�digo simplificado
+### Cédigo simplificado
 Controller:
 ```csharp
 var createdBook = await _bookService.CreateAsync(request, cancellationToken);
@@ -330,34 +330,34 @@ await _dbContext.SaveChangesAsync(cancellationToken);
 ```
 
 ## READ - Listar livros
-### Requisi��o
+### Requisiééo
 `GET /api/books`
 
 ### Passo a passo interno
 1. O controller chama `GetAllAsync`.
-2. O servi�o consulta o reposit�rio.
-3. O reposit�rio consulta o banco com `AsNoTracking()`.
-4. O servi�o converte entidades para `BookDto`.
+2. O serviéo consulta o repositério.
+3. O repositério consulta o banco com `AsNoTracking()`.
+4. O serviéo converte entidades para `BookDto`.
 5. O controller responde `200 OK`.
 
-### C�digo simplificado
+### Cédigo simplificado
 ```csharp
 var books = await _bookRepository.GetAllAsync(cancellationToken);
 return books.Select(MapToDto).ToArray();
 ```
 
 ## READ BY ID - Buscar livro por id
-### Requisi��o
+### Requisiééo
 `GET /api/books/{bookId}`
 
 ### Passo a passo interno
 1. O controller recebe `bookId`.
-2. O servi�o consulta o reposit�rio.
-3. Se n�o encontrar, lan�a `NotFoundException`.
+2. O serviéo consulta o repositério.
+3. Se néo encontrar, lanéa `NotFoundException`.
 4. O middleware global converte isso para `404`.
 5. Se encontrar, retorna `200 OK`.
 
-### C�digo simplificado
+### Cédigo simplificado
 ```csharp
 var book = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
 if (book is null)
@@ -367,7 +367,7 @@ if (book is null)
 ```
 
 ## UPDATE - Atualizar livro
-### Requisi��o
+### Requisiééo
 `PUT /api/books/{bookId}`
 
 Payload:
@@ -382,14 +382,14 @@ Payload:
 ### Passo a passo interno
 1. O controller recebe `bookId` e o body.
 2. O ASP.NET valida `UpdateBookDto`.
-3. O servi�o busca o livro no reposit�rio.
-4. Se n�o existir, lan�a `NotFoundException`.
+3. O serviéo busca o livro no repositério.
+4. Se néo existir, lanéa `NotFoundException`.
 5. Se existir, chama `existingBook.UpdateDetails(...)`.
-6. A entidade reaplica valida��es de dom�nio.
-7. O reposit�rio persiste a atualiza��o.
+6. A entidade reaplica validaéées de domínio.
+7. O repositério persiste a atualizaééo.
 8. O controller retorna `204 No Content`.
 
-### C�digo simplificado
+### Cédigo simplificado
 ```csharp
 var existingBook = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
 if (existingBook is null)
@@ -402,17 +402,17 @@ await _bookRepository.UpdateAsync(existingBook, cancellationToken);
 ```
 
 ## DELETE - Remover livro
-### Requisi��o
+### Requisiééo
 `DELETE /api/books/{bookId}`
 
 ### Passo a passo interno
 1. O controller recebe o `bookId`.
-2. O servi�o busca o livro.
-3. Se n�o existir, lan�a `NotFoundException`.
-4. Se existir, chama o reposit�rio para remo��o.
+2. O serviéo busca o livro.
+3. Se néo existir, lanéa `NotFoundException`.
+4. Se existir, chama o repositério para remoééo.
 5. O controller retorna `204 No Content`.
 
-### C�digo simplificado
+### Cédigo simplificado
 ```csharp
 var existingBook = await _bookRepository.GetByIdAsync(bookId, cancellationToken);
 if (existingBook is null)
@@ -423,63 +423,63 @@ if (existingBook is null)
 await _bookRepository.DeleteAsync(existingBook, cancellationToken);
 ```
 
-## Por que essa arquitetura � boa para estudo
-Essa estrutura � �til porque mostra separa��o real de responsabilidades:
+## Por que essa arquitetura é boa para estudo
+Essa estrutura é étil porque mostra separaééo real de responsabilidades:
 
-- a API n�o conhece EF Core
-- a regra de neg�cio n�o conhece controller
-- o reposit�rio n�o define regra de neg�cio
-- o dom�nio n�o depende de infraestrutura
+- a API néo conhece EF Core
+- a regra de negócio néo conhece controller
+- o repositério néo define regra de negócio
+- o domínio néo depende de infraestrutura
 - a troca de banco afeta principalmente a infraestrutura
 
-## Benef�cios pr�ticos
-- mais f�cil testar o `BookService`
-- mais f�cil trocar `PostgreSQL` por outro banco
-- mais f�cil localizar responsabilidades
-- menor risco de duplicar regra em v�rios lugares
+## Benefécios préticos
+- mais fécil testar o `BookService`
+- mais fécil trocar `PostgreSQL` por outro banco
+- mais fécil localizar responsabilidades
+- menor risco de duplicar regra em vérios lugares
 - controller mais limpo
 - tratamento de erro padronizado
 
-## Limita��es atuais
-A arquitetura est� boa para estudo e projetos pequenos/m�dios, mas ainda pode evoluir.
+## Limitaéées atuais
+A arquitetura está boa para estudo e projetos pequenos/médios, mas ainda pode evoluir.
 
-Poss�veis melhorias:
+Posséveis melhorias:
 - usar `FluentValidation`
 - usar `MediatR` para separar comandos e queries
 - criar respostas padronizadas de sucesso e erro
-- adicionar testes unit�rios e testes de integra��o
-- usar transa��es em cen�rios mais complexos
+- adicionar testes unitérios e testes de integraééo
+- usar transaéées em cenérios mais complexos
 - introduzir logs estruturados por caso de uso
 
 ## Resumo final
 ### Domain
-Respons�vel por:
+Responsével por:
 - entidade `Book`
-- valida��es centrais do neg�cio
+- validaéées centrais do negócio
 
 ### Application
-Respons�vel por:
+Responsével por:
 - contratos
 - DTOs
 - casos de uso
 - fluxo do CRUD
 
 ### Infrastructure
-Respons�vel por:
+Responsével por:
 - EF Core
 - PostgreSQL
-- reposit�rios
+- repositórios
 - migrations
 - seed
-- registro de depend�ncias
+- registro de dependências
 
 ### Api
-Respons�vel por:
+Responsével por:
 - endpoints HTTP
 - bind de request/response
-- valida��o autom�tica de entrada
-- middleware global de exce��es
-- inicializa��o da aplica��o
+- validaééo automética de entrada
+- middleware global de exceéées
+- inicializaééo da aplicação
 
 ## Arquivos mais importantes para estudar primeiro
 1. [Book.cs](d:\source\repos\estudoPrompts\BookStore.Domain\Entities\Book.cs)
